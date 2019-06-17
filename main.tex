@@ -1,0 +1,153 @@
+\documentclass{beamer}
+\usetheme{Boadilla}
+\usepackage{smartdiagram}
+\title{P57 - Automatic Annotation Inserter}
+\author{Massimo Fioravanti}
+\institute{Polimi}
+\date{\today}
+\begin{document}
+\smartdiagramset{
+    back arrow disabled=true,
+  }
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Abstract}
+	\begin{block}{}
+		Taffo compiler is a collection of llvm passes used to perform precision tuning.
+		The user is allowed to annotate variables and functions with bounds and properties, so that Taffo can make optimizations that are otherwise impossibile.
+	\end{block}
+
+	\begin{alertblock}{}
+	\begin{semiverbatim}
+		float lerp(
+		\quad float start, 
+		\quad float end, 
+		\quad float __attribute(annotate("scalar(range(0, 1))")) i)
+		\{
+		\quad return ((1-i) * start) + (i * end);
+		\}
+	\end{semiverbatim}
+	\end{alertblock}
+
+	\begin{block}{}
+		The floating variable i will be assumed to be in the range [0,1].
+	\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Abstract}
+	\begin{block}{}
+		This annotations can grow in complexity fast. 
+		When a variable is a struct it is neccessary to specify the annotation of each member of the struct.
+	\end{block}
+	
+	\begin{alertblock}{}
+	\begin{semiverbatim}	
+		struct Internal {float v1, float v2, float v3};
+		struct External {float u1, struct Internal u2};
+		
+		struct External __attribute(annotate("struct[
+		\quad scalar(...), struct[
+		\quad \quad scalar(...), 
+		\quad \quad scalar(...), 
+		\quad \quad scalar(...)]]")) var;
+	\end{semiverbatim}
+	\end{alertblock}
+	\begin{block}{}
+		The objective is decouples the internal rappresentation of taffo annotations from the rappresentation used by end users, allowing that rappresentation to be simpler.
+	\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{Solution}
+	\begin{block}{}
+	Most of the complexity araises from the impossibility of reusing the same struct annotation multiple time, since there is no way to give a name to them.
+
+	We wish to be able to express a concept like:
+	\end{block}
+
+	\begin{alertblock}{}
+	\begin{semiverbatim}	
+		\{
+		\quad "struct": "internal",
+		\quad "content": [\{...\}, \{...\}, \{...\}]
+		\},
+		\{
+		\quad "struct": "external",
+		\quad "content": [\{...\}, "internal"]
+		\}
+	\end{semiverbatim}
+	\end{alertblock}
+
+	\begin{block}{}
+	This allow us to express a hierarchical structure without having to express it with syntax.
+	\end{block}
+
+\end{frame}
+\begin{frame}[fragile]
+	\frametitle{Insertion}
+	%\begin{minipage}[t]{0.48\linewidth}
+	\begin{block}{}
+	We decided to subset of the json language to rappresent our user annotation language.
+	This allow us reuse well known libray to load the user defined annotations from a json file.
+	\end{block}
+	\begin{block}{}
+		We since the user will often tune the annotations we wish to make sure that the user does not need to change the source files every time. 
+	\end{block}
+	\smartdiagram[flow diagram:horizontal]{annotations.json, annotated.c, llvm.ll, out.o}
+	%\end{minipage}
+	%\hfill%
+	%\begin{minipage}[t]{0.48\linewidth}
+	%\end{minipage}
+
+\end{frame}
+\begin{frame}[fragile]
+	\frametitle{Insertion}
+	\begin{block}{}
+		Since we only care about declaration we do not need to worry about macros, we can run the preprocessor and save the output in a temporary file, parse the content temporary, locate the declarations insert the annotation, and then compile as normal. 
+	\end{block}
+	
+	\smartdiagram[flow diagram:horizontal]{preprocessor, inserter tool, clang, taffo-passes}
+	\begin{block}{}
+		The inserter tool only need to be able to parse c and cpp files. Clang libtooling is the standard solution for this operation.
+	\end{block}
+
+\end{frame}
+\begin{frame}[fragile]
+	\frametitle{Clang tools}
+	\begin{block}{}
+		Libtooling allows us to write a recursive visitor of the clang Abstract Syntax Tree. Every time we encounter a declaration we check if it is the declaration of a variable that must be annotated. If it is we can insert the annotation at the start of the declaration. Libtooling includes rewriting utilities. 
+	\end{block}
+
+	\begin{block}{}
+		Many edge cases are present, but most of them are solved by running the preprocessor before the tool. Still other kinds of code generations, such as c++ templates, can elude the insertion.
+	\end{block}
+	
+
+\end{frame}
+\begin{frame}[fragile]
+	\frametitle{Results}
+	\begin{block}{}
+		This pipeline allowed us to annotate the Approximate Computing Benchmarchs with almost no neccessity of insert manually the annotations in the source code, as well as providing a easy to use syntax to the final users that is independant from the internal rappresentation.
+	\end{block}
+
+
+\end{frame}
+\begin{frame}[fragile]
+	\frametitle{Future Works}
+	\begin{block}{}
+		The user language is small and easy to use and there is no particular need to extend it.
+	\end{block}
+	\begin{block}{}
+		As is always the case with c++ syntax there is plenty of room to cover insertion edge cases, as well as detecting impossible insertion and alert the user that such edge cases are taking place.
+	\end{block}
+	\begin{block}{}
+		To improve build performance it would be usefull to integrate the preprocessor and the annotation inserter with tools that provide incremental builds so that it is not neccessary to insert the annotations at each invocation of the compiler but only when the annotation file or the source file are changed.
+	\end{block}
+
+
+\end{frame}
+\end{document}
