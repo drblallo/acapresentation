@@ -40,7 +40,7 @@
 \begin{frame}[fragile]
 	\frametitle{Abstract}
 	\begin{block}{}
-		This annotations can grow in complexity fast. 
+		These annotations can quickly grow in complexity. 
 		When a variable is a struct it is neccessary to specify the annotation of each member of the struct.
 	\end{block}
 	
@@ -57,14 +57,14 @@
 	\end{semiverbatim}
 	\end{alertblock}
 	\begin{block}{}
-		The objective is decouples the internal rappresentation of taffo annotations from the rappresentation used by end users, allowing that rappresentation to be simpler.
+		The objective is to decouple the internal reppresentation of taffo annotations from the one used by end users, allowing that to be simpler.
 	\end{block}
 \end{frame}
 
 \begin{frame}[fragile]
 	\frametitle{Solution}
 	\begin{block}{}
-	Most of the complexity araises from the impossibility of reusing the same struct annotation multiple time, since there is no way to give a name to them.
+	Most of the complexity arises from the impossibility of reusing the same struct annotation multiple time, since there is no way to give a name to them.
 
 	We wish to be able to express a concept like:
 	\end{block}
@@ -91,11 +91,11 @@
 	\frametitle{Insertion}
 	%\begin{minipage}[t]{0.48\linewidth}
 	\begin{block}{}
-	We decided to subset of the json language to rappresent our user annotation language.
-	This allow us reuse well known libray to load the user defined annotations from a json file.
+	We decided to use a subset of the json language to rappresent our user annotation language.
+	This allow us reuse a well known libray to load the user defined annotations from a json file.
 	\end{block}
 	\begin{block}{}
-		We since the user will often tune the annotations we wish to make sure that the user does not need to change the source files every time. 
+		Since the user will often tune the annotations we wish to make sure that the user does not need to change the source files every time. 
 	\end{block}
 	\smartdiagram[flow diagram:horizontal]{annotations.json, annotated.c, llvm.ll, out.o}
 	%\end{minipage}
@@ -119,7 +119,7 @@
 \begin{frame}[fragile]
 	\frametitle{Clang tools}
 	\begin{block}{}
-		Libtooling allows us to write a recursive visitor of the clang Abstract Syntax Tree. Every time we encounter a declaration we check if it is the declaration of a variable that must be annotated. If it is we can insert the annotation at the start of the declaration. Libtooling includes rewriting utilities. 
+		Libtooling allows us to write a recursive visitor of the clang Abstract Syntax Tree. Every time we encounter a declaration we check if it is a VarDecl of a variable that must be annotated. If it is we can insert the annotation at the before at the beginning. Libtooling includes rewriting utilities. 
 	\end{block}
 
 	\begin{block}{}
@@ -131,7 +131,7 @@
 \begin{frame}[fragile]
 	\frametitle{Results}
 	\begin{block}{}
-		This pipeline allowed us to annotate the Approximate Computing Benchmarchs with almost no neccessity of insert manually the annotations in the source code, as well as providing a easy to use syntax to the final users that is independant from the internal rappresentation.
+		This pipeline allowed us to annotate the Approximate Computing Benchmarchs with almost no neccessity of insert manually the annotations in the source code, as well as providing a easy to use syntax to the final users that is independent from the internal reppresentation.
 	\end{block}
 
 
@@ -145,7 +145,7 @@
 		As is always the case with c++ syntax there is plenty of room to cover insertion edge cases, as well as detecting impossible insertion and alert the user that such edge cases are taking place.
 	\end{block}
 	\begin{block}{}
-		To improve build performance it would be usefull to integrate the preprocessor and the annotation inserter with tools that provide incremental builds so that it is not neccessary to insert the annotations at each invocation of the compiler but only when the annotation file or the source file are changed.
+		To improve build performance it would be useful to integrate the preprocessor and the annotation inserter with tools that provide incremental builds so that it is not neccessary to insert the annotations at each invocation of the compiler but only when the annotation file or the source file are changed.
 	\end{block}
 
 
