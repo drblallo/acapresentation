@@ -107,7 +107,7 @@
 \begin{frame}[fragile]
 	\frametitle{Insertion}
 	\begin{block}{}
-		Since we only care about declaration we do not need to worry about macros, we can run the preprocessor and save the output in a temporary file, parse the content temporary, locate the declarations insert the annotation, and then compile as normal. 
+		The c/c++ compilation pipeline will look as follow, we run the preprocessor and save the output in a temporary file, parse the content temporary, locate the declarations insert the annotation, and then compile as normal. 
 	\end{block}
 	
 	\smartdiagram[flow diagram:horizontal]{preprocessor, inserter tool, clang, taffo-passes}
@@ -119,11 +119,11 @@
 \begin{frame}[fragile]
 	\frametitle{Clang tools}
 	\begin{block}{}
-		Libtooling allows us to write a recursive visitor of the clang Abstract Syntax Tree. Every time we encounter a declaration we check if it is a VarDecl of a variable that must be annotated. If it is we can insert the annotation at the before at the beginning. Libtooling includes rewriting utilities. 
+		Libtooling is a clang library that is part of the llvm project. It allows to parse the Abstract Syntax Tree of a c/c++ program and to rewrite the source code, in this case by inserting annotations. 
 	\end{block}
 
 	\begin{block}{}
-		Many edge cases are present, but most of them are solved by running the preprocessor before the tool. Still other kinds of code generations, such as c++ templates, can elude the insertion.
+		Since the c++ is complex many edge cases are present, but most of them are solved by running the preprocessor before the tool. Still other kinds of code generations, such as c++ templates, can elude the insertion.
 	\end{block}
 	
 
