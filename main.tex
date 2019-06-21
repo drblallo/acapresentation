@@ -33,15 +33,19 @@
 	\end{alertblock}
 
 	\begin{block}{}
-		The floating variable i will be assumed to be in the range [0,1].
+		The floating point variable i will be assumed to be in the range [0,1].
 	\end{block}
 \end{frame}
 
 \begin{frame}[fragile]
 	\frametitle{Abstract}
 	\begin{block}{}
-		These annotations can quickly grow in complexity. 
-		When a variable is a struct it is neccessary to specify the annotation of each member of the struct.
+		The objective is to decouple the internal reppresentation of taffo annotations from the one used by end users, allowing the external one to be simpler and more usable.
+	\end{block}
+
+	\begin{block}{}
+		In particular we wish to contain the complexity araising from structs.
+		When a variable is a struct it is neccessary to specify the annotation of each member of the struct, and for each member of each included struct.
 	\end{block}
 	
 	\begin{alertblock}{}
@@ -56,34 +60,27 @@
 		\quad \quad scalar(...)]]")) var;
 	\end{semiverbatim}
 	\end{alertblock}
-	\begin{block}{}
-		The objective is to decouple the internal reppresentation of taffo annotations from the one used by end users, allowing that to be simpler.
-	\end{block}
 \end{frame}
 
 \begin{frame}[fragile]
 	\frametitle{Solution}
 	\begin{block}{}
-	Most of the complexity arises from the impossibility of reusing the same struct annotation multiple time, since there is no way to give a name to them.
-
-	We wish to be able to express a concept like:
+		We requre the ability to express 2 concepts, list of named structs, and dictionaries of final annotations.
 	\end{block}
 
 	\begin{alertblock}{}
 	\begin{semiverbatim}	
-		\{
-		\quad "struct": "internal",
-		\quad "content": [\{...\}, \{...\}, \{...\}]
-		\},
-		\{
-		\quad "struct": "external",
-		\quad "content": [\{...\}, "internal"]
-		\}
+		\{\quad "struct": "internal",
+		\quad "content": [\{...\}, \{...\}, \{...\}]\},
+		\{\quad "struct": "external",
+		\quad "content": [\{...\}, "internal"]\},
+		\{\quad "globalVar":  "ext", "struct:": "external"\},
+		\{\quad "globalVar":  "i", "rangeMin": 0, "rangeMax": 1\}
 	\end{semiverbatim}
 	\end{alertblock}
 
 	\begin{block}{}
-	This allow us to express a hierarchical structure without having to express it with syntax.
+	This allow us to express a hierarchical structure without having to utilize it with syntax, and provides us all the expressive power we need for this project.
 	\end{block}
 
 \end{frame}
@@ -107,7 +104,7 @@
 \begin{frame}[fragile]
 	\frametitle{Insertion}
 	\begin{block}{}
-		The c/c++ compilation pipeline will look as follow, we run the preprocessor and save the output in a temporary file, parse the content temporary, locate the declarations insert the annotation, and then compile as normal. 
+		The c/c++ compilation pipeline will look as follow, we run the preprocessor and save the output in a temporary file, parse the content temporary, locate the declarations, insert the annotation, and then compile as normal. 
 	\end{block}
 	
 	\smartdiagram[flow diagram:horizontal]{preprocessor, inserter tool, clang, taffo-passes}
@@ -131,23 +128,42 @@
 \begin{frame}[fragile]
 	\frametitle{Results}
 	\begin{block}{}
-		This pipeline allowed us to annotate the Approximate Computing Benchmarchs with almost no neccessity of insert manually the annotations in the source code, as well as providing a easy to use syntax to the final users that is independent from the internal reppresentation.
+		This tool https://www.github.com/HEAPLab/TAFFO is compatible with the most complex benchmarchs supported by taffo. TAFFO has been integrated with can use the inserter to apply annotations without changing the benchmarchs source code at all.
+	\end{block}
+	\begin{block}{}
+		The overall pipeline is easy to use and only require to provide the annotation file to the TAFFO compiler. Users do not need to be exposed to the taffo internals.
 	\end{block}
 
 
 \end{frame}
+
 \begin{frame}[fragile]
 	\frametitle{Future Works}
 	\begin{block}{}
 		The user language is small and easy to use and there is no particular need to extend it.
 	\end{block}
 	\begin{block}{}
-		As is always the case with c++ syntax there is plenty of room to cover insertion edge cases, as well as detecting impossible insertion and alert the user that such edge cases are taking place.
+		As is always the case with c++ syntax there is plenty of room to cover insertion edge cases, as well as detecting impossible insertion and alert the user that such edge cases are taking place. 
 	\end{block}
 	\begin{block}{}
 		The compilation pipeline is still similar to a standard one, and integration with build tools can lead to a great improvement in compilation times, since currently it is neccessary recompile every annotated source file at each iteration.
 	\end{block}
-
-
+	\begin{block}{}
+		Both this expansions are time consuming but not particulary complex, they are could be implemented when they are needed, or as a introductory project for someone that wishes to learn about clang, c++ syntax or build systems.
+	\end{block}
 \end{frame}
+
+\begin{frame}[fragile]
+	\frametitle{References}
+	\begin{block}{}
+		\begin{itemize}
+			\item  TAFFO: Tuning Assistant for Floating point to Fixed point Optimization S. Cherubin, D. Cattaneo, A. Di Bello, M. Chiari, G. Agosta 
+IEEE Embedded Systems Letters. Apr 2019. 
+DOI: 10.1109/LES.2019.2913774
+			\item A. Yazdanbakhsh, D. Mahajan, P. Lotfi-Kamran, H. Esmaeilzadeh, "AXBENCH: A Multi-Platform Benchmark Suite for Approximate Computing", IEEE Design and Test, special issue on Computing in the Dark Silicon Era 2016.
+			\item Clang, libtootling https://clang.llvm.org/
+		\end{itemize}
+	\end{block}
+\end{frame}
+
 \end{document}
