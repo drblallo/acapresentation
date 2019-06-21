@@ -3,7 +3,7 @@
 \usepackage{smartdiagram}
 \title{P57 - Automatic Annotation Inserter}
 \author{Massimo Fioravanti}
-\institute{Polimi}
+\institute{Stefano Cherubin}
 \date{\today}
 \begin{document}
 \smartdiagramset{
@@ -40,7 +40,7 @@
 \begin{frame}[fragile]
 	\frametitle{Abstract}
 	\begin{block}{}
-		The objective is to decouple the internal reppresentation of taffo annotations from the one used by end users, allowing the external one to be simpler and more usable.
+		The objective is to decouple the internal representation of taffo annotations from the one exposed to end users, allowing the external one to be simpler and more usable.
 	\end{block}
 
 	\begin{block}{}
@@ -140,16 +140,13 @@
 \begin{frame}[fragile]
 	\frametitle{Future Works}
 	\begin{block}{}
-		The user language is small and easy to use and there is no particular need to extend it.
-	\end{block}
-	\begin{block}{}
 		As is always the case with c++ syntax there is plenty of room to cover insertion edge cases, as well as detecting impossible insertion and alert the user that such edge cases are taking place. 
 	\end{block}
 	\begin{block}{}
 		The compilation pipeline is still similar to a standard one, and integration with build tools can lead to a great improvement in compilation times, since currently it is neccessary recompile every annotated source file at each iteration.
 	\end{block}
 	\begin{block}{}
-		Both this expansions are time consuming but not particulary complex, they are could be implemented when they are needed, or as a introductory project for someone that wishes to learn about clang, c++ syntax or build systems.
+		This extensions represent time consuming engineering work and they can be done on-demand, or as a introductory project for someone that wishes to learn about clang, c++ syntax or build systems.
 	\end{block}
 \end{frame}
 
