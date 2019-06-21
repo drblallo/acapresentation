@@ -145,7 +145,7 @@
 		As is always the case with c++ syntax there is plenty of room to cover insertion edge cases, as well as detecting impossible insertion and alert the user that such edge cases are taking place.
 	\end{block}
 	\begin{block}{}
-		To improve build performance it would be useful to integrate the preprocessor and the annotation inserter with tools that provide incremental builds so that it is not neccessary to insert the annotations at each invocation of the compiler but only when the annotation file or the source file are changed.
+		The compilation pipeline is still similar to a standard one, and integration with build tools can lead to a great improvement in compilation times, since currently it is neccessary recompile every annotated source file at each iteration.
 	\end{block}
 
 
